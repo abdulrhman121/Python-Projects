@@ -4,12 +4,13 @@ import string
 
 Bank_Data = {
     4454: {"Name": "Abdulrhman", "password": 1458, "Money": 105584},
-    4455: {"Name": "Abdulrhman", "password": 7420, "Money": 543},
+    4455: {"Name": "Ahmed", "password": 7420, "Money": 543},
 }
 
 config = {
     "Min_Deposit": 1,  # Minimum deposit amount
     "Min_Withdrawal": 1,  # Minimum withdrawal amount
+    "Min_transfer": 1,  # Minimum withdrawal amount
     "Id_Num": 4,  # Number of digits in the ID
     "pass_Num": 4,  # number of password characters
     "id_chars": string.digits,  # '0123456789'
@@ -112,6 +113,34 @@ def withdraw(login_id):
         except ValueError:
             print(f"\n{config['Prefix']} Just numbers!")
 
+def transfer(login_id):
+    while True:
+        transfer_to = int(input("What is the identifier to which the data should be transferred? "))
+        if transfer_to == login_id:
+            print("You can't transfer to yourself!")
+            continue
+        if transfer_to not in Bank_Data:
+            print("\nThis Id not found..")
+            continue
+        transfer_amount = float(input("How much do you wish to transfer? "))
+        if transfer_amount < 1 or transfer_amount < config["Min_transfer"]:
+            print(f"The minimum transfer amount is {config['Min_transfer']}")
+            continue
+        elif transfer_amount > Bank_Data[login_id]["Money"]:
+            print("You don't have that amount of money.")
+            return
+        else:
+            break
+    while True:
+        yn = input("Are you sure (y/n)? ")
+        if yn.strip().lower() == "n":
+            return
+        elif yn.strip().lower() == "y":
+            Bank_Data[login_id]["Money"] -= transfer_amount
+            Bank_Data[transfer_to]["Money"] += transfer_amount
+            print(f"\n{transfer_amount} were successfully transferred to {Bank_Data[transfer_to]["Name"]}, id = {transfer_to}")
+            return
+
 
 def check_account(login_id):
     print("\n")
@@ -128,9 +157,13 @@ def directing(login_id):
     elif choice.strip() == "2":
         withdraw(login_id)
     elif choice.strip() == "3":
-        check_account(login_id)
+        transfer(login_id)
     elif choice.strip() == "4":
+        check_account(login_id)
+    elif choice.strip() == "5":
         exit()
+    else:
+        print(f"{config['Prefix']} Invalid choice!")
 
 
 def login():
@@ -152,8 +185,9 @@ def login():
             print("""\nType a number: 
         [ 1 ] deposit
         [ 2 ] withdraw
-        [ 3 ] check_account
-        [ 4 ] exit""")
+        [ 3 ] transfer
+        [ 4 ] check_account
+        [ 5 ] exit""")
             directing(login_id)
     else:
         loading(sec=1)
@@ -173,7 +207,7 @@ def main():
 
         if choice.strip() == "1":
             add_account()
-        elif choice.strip() == "2":
+        elif choice.strip() == "2": 
             login()
         elif choice.strip() == "0":
             print(f"{config['Prefix']} Goodbye!")
@@ -182,5 +216,5 @@ def main():
             print(f"{config['Prefix']} Invalid choice!")
 
 
-Bank_Data.clear()
+
 main()
